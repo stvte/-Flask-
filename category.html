@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}分类管理{% endblock %}
+
+{% block content %}
+    <script src="{{ url_for('static',filename='axios/axios.min.js') }}"></script>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"> 添加分类</button>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>分类名称</th>
+            <th>父类</th>
+            <th>层级</th>
+            <th>编辑</th>
+            <td>删除</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item  in categories %}
+            <tr>
+                {#       {{ article }}#}
+                {#          (1, 'a', 'a', '1', datetime.datetime(2025, 7, 4, 10, 35, 3), 1, '根分类', -1, '0') #}
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+                <td><a href="/category/delete/{{ item[0] }}" class="btn btn-warning btn-sm">编辑</a></td>
+                <td><a href="/category/delete/{{ item[0] }}" class="btn btn-danger btn-sm">删除</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 模态框 -->
+    <div class="modal" id="myModal" data-dismiss="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">添加分类</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                 <style>  .alert-box-hidden{ display: none }  </style>
+                <div class="alert alert-success alert-dismissible alert-box-hidden"  id="alert-box">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong> 分类插入成功!</strong>
+                </div>
+                <!-- 模态框内容 -->
+                <div class="modal-body">
+                    <form action="/category/add" method="post">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">分类名称</label>
+                            <input type="text" class="form-control" id="category_name" name="category_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="category_level" class="form-label">分类层级</label>
+                            <select type="text" class="form-control" id="category_level" name="level"
+                                    onchange="onLevelChange();">
+                                <option value="1">一级</option>
+                                <option value="2">二级</option>
+                                <option value="3">三级</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="parent_id" class="form-label">父类</label>
+                            <select type="text" class="form-control" id="parent_id" name="parent_id">
+
+                                {% for item  in categories %}
+                                    <option value="{{ item[0] }}">{{ item[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="onsave();">提交</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeit">关闭</button>
+                        <span style="color:green;" id="errortext"></span>
+                    </form>
+                </div>
+
+                <!-- 模态框底部 -->
+                {#      <div class="modal-footer">#}
+                {#        #}
+                {#      </div>#}
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function onLevelChange() {
+            let level = document.getElementById("category_level").value;
+            console.log(level);
+            if (level === '1') {
+                console.log(level, 'true');
+                document.getElementById("parent_id").innerHTML = '';
+                document.getElementById("parent_id").innerHTML = "<option value='1'>根分类</option>";
+            } else if (level === '2') {
+                document.getElementById("parent_id").innerHTML = '';
+                axios.post('/category/level/1', {}).then(function (response) {
+                    console.log(response.data);
+                    let arr = response.data;
+                    let html = '';
+                    for (let i = 0; i < arr.length; i++) {
+                        // [2, '文学', 1, '1']
+                        html += `<option value="${arr[i][0]}">${arr[i][1]}</option>`;
+                    }
+                    document.getElementById("parent_id").innerHTML = html;
+                }).catch(function (error) {
+                    console.log(error)
+                });
+            }
+        }
+
+        function onsave() {
+            let category_name = document.getElementById("category_name").value;
+            let level = document.getElementById("category_level").value;
+            let parent_id = document.getElementById("parent_id").value;
+            axios.post('/category/add', {"category_name": category_name, "level": level, "parent_id": parent_id},
+                {headers: {'Content-Type': 'application/json'}})
+                .then(function (response) {
+                    console.log(response.data.status)
+                    if (response.data.status === 'ok') {
+                        //document.getElementById('errortext').innerHTML = '添加成功';
+                        document.getElementById('alert-box').classList.remove('alert-box-hidden');
+                        setTimeout(function () {
+                            document.getElementById('errortext').innerHTML = '';
+                            document.getElementById('closeit').click();
+                        }, 2000);
+
+                    }
+
+                }).catch(function (error) {
+                console.log(error)
+            });
+        }
+
+    </script>
+{% endblock %}

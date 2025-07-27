@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}默认标题{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+
+
+        /* 侧边栏样式 */
+        #sidebar {
+            min-height: calc(100vh - 56px);
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        #sidebar.collapsed {
+            margin-left: -250px;
+        }
+
+        /* 内容区域样式 */
+        #content {
+            width: 100%;
+            min-height: calc(100vh - 56px);
+            transition: all 0.3s;
+        }
+
+        /* 小屏幕时侧边栏默认收起 */
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -250px;
+            }
+            #sidebar.active {
+                margin-left: 0;
+            }
+        }
+
+        /* 侧边栏链接样式 */
+        .sidebar-link {
+            padding: 10px 15px;
+            display: block;
+            color: #333;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
+        }
+
+        .sidebar-link.active {
+            background-color: #e9ecef;
+            border-left: 3px solid #0d6efd;
+        }
+
+        /* 子菜单样式 */
+        .submenu {
+            padding-left: 20px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <!-- 侧边栏切换按钮 -->
+            <button class="btn btn-dark" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <a class="navbar-brand ms-2" href="#">网站名称</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-house-door"></i> 首页</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> 用户
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">个人资料</a></li>
+                            <li><a class="dropdown-item" href="#">设置</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">退出登录</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-0">
+        <div class="d-flex">
+            <!-- 左侧侧边栏 -->
+            <div id="sidebar" class="bg-light">
+                <div class="p-3">
+                    <h5>菜单导航</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="sidebar-link active">
+                        <i class="bi bi-speedometer2 me-2"></i> 仪表盘
+                    </a>
+                    <a href="#submenu1" data-bs-toggle="collapse" class="sidebar-link">
+                        <i class="bi bi-file-earmark-text me-2"></i> 博客管理系统
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse submenu" id="submenu1">
+                        <a href="/article/all_articles" class="sidebar-link">文章列表</a>
+                        <a href="/article/add" class="sidebar-link">添加文章</a>
+                        <a href="/category/all_categories" class="sidebar-link">分类管理</a>
+                    </div>
+                    <!--菜单开始-->
+                     <a href="#submenu3" data-bs-toggle="collapse" class="sidebar-link">
+                        <i class="bi bi-file-earmark-text me-2"></i> 图书管理系统
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse submenu" id="submenu3">
+                        <a href="/book/all_books" class="sidebar-link">图书列表</a>
+                        <a href="/book/addbook" class="sidebar-link">添加图书</a>
+{#                        <a href="#" class="sidebar-link">图书分类管理</a>#}
+                    </div>
+                    <!--菜单结束-->
+
+                    <a href="/users/query" class="sidebar-link">
+                        <i class="bi bi-people me-2"></i> 用户管理
+                    </a>
+                    <a href="#submenu2" data-bs-toggle="collapse" class="sidebar-link">
+                        <i class="bi bi-gear me-2"></i> 系统设置
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse submenu" id="submenu2">
+                        <a href="#" class="sidebar-link">基本设置</a>
+                        <a href="#" class="sidebar-link">权限管理</a>
+                    </div>
+                    <a href="#" class="sidebar-link">
+                        <i class="bi bi-bar-chart me-2"></i> 数据统计
+                    </a>
+                </div>
+            </div>
+
+            <!-- 右侧内容区域 -->
+            <div id="content" class="p-4">
+                {% block content %}
+                <h1>欢迎使用管理系统</h1>
+                <p>这是一个使用Bootstrap 5构建的管理系统模板，包含顶部导航栏、左侧可折叠菜单和右侧内容区域。</p>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 侧边栏切换脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+            });
+
+            // 响应式处理
+            function checkWidth() {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            }
+
+            // 初始检查
+            checkWidth();
+
+            // 窗口大小改变时检查
+            window.addEventListener('resize', checkWidth);
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
